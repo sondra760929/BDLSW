@@ -2,23 +2,21 @@ import { useEffect, useState } from "react";
 import AppRouter from "components/Router";
 import { authService } from "fbase";
 import { updateProfile } from "firebase/auth";
+import axios from "axios";
 
 function App() {
   const [init, setInit] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userObj, setUserObj] = useState(null);
   useEffect(() => {
     authService.onAuthStateChanged((user) => {
-      if(user){
-        setIsLoggedIn(true);
+      if (user) {
         setUserObj({
           displayName: user.displayName,
           uid: user.uid,
-          updateProfile: (args) => updateProfile(user, args),
+          updateProfile: (args) => user.updateProfile(args),
         });
       } else {
         setUserObj(null);
-        setIsLoggedIn(false);
       }
       setInit(true);
     });
@@ -28,15 +26,21 @@ function App() {
     setUserObj({
       displayName: user.displayName,
       uid: user.uid,
-      updateProfile: (args) => updateProfile(user, args),
+      updateProfile: (args) => user.updateProfile(args),
     });
   };
-  return ( 
+  return (
     <>
-      {init ? <AppRouter refreshUser={refreshUser} isLoggedIn={isLoggedIn} userObj={userObj} /> : "Initialzing..."}
-      <footer>&copy; BDLSW {new Date().getFullYear()}</footer>
+      {init ? (
+        <AppRouter
+          refreshUser={refreshUser}
+          isLoggedIn={Boolean(userObj)}
+          userObj={userObj}
+        />
+      ) : (
+        "Initializing..."
+      )}
     </>
   );
 }
-
 export default App;

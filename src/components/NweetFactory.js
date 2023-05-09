@@ -13,7 +13,6 @@ const NweetFactory = ({ userObj }) => {
     if (attachment !== "") {
         const fileRef = ref(storageService, `${userObj.uid}/${uuidv4()}`);
         const response = await uploadString(fileRef, attachment, "data_url");
-        console.log(response);
         attachmentUrl = await getDownloadURL(response.ref);
     }
     const nweetObj = {
